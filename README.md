@@ -1,6 +1,6 @@
-
 # Serper Google Search MCP Server
 
+[![smithery badge](https://smithery.ai/badge/@NightTrek/Serper-search-mcp)](https://smithery.ai/server/@NightTrek/Serper-search-mcp)
 ![serper-logo](https://github.com/user-attachments/assets/d635efd2-f044-4e42-a938-45e44de7d12b)
 
 A Model Context Protocol server that provides Google search capabilities through the Serper API. This server enables easy integration of Google search functionality into your MCP-enabled applications.
@@ -26,6 +26,15 @@ search integration through Serper API
 
 ## 🚀 Installation
 
+### Installing via Smithery
+
+To install Serper Google Search Server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@NightTrek/Serper-search-mcp):
+
+```bash
+npx -y @smithery/cli install @NightTrek/Serper-search-mcp --client claude
+```
+
+### Manual Installation
 1. Clone the repository:
 ```bash
 git clone https://github.com/yourusername/serper-search-server.git
