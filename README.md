@@ -1,8 +1,10 @@
-
 # Serper Search MCP Server
 
 A Model Context Protocol server that provides Google search capabilities through the Serper API, along with an AI-powered Deep Research tool. This server enables easy integration of search and research functionality into your MCP-enabled applications.
 
+<a href="https://glama.ai/mcp/servers/dgyr9ut8o5">
+  <img width="380" height="200" src="https://glama.ai/mcp/servers/dgyr9ut8o5/badge" alt="Serper Search Server MCP server" />
+</a>
 
 ## ✨ Features
 
