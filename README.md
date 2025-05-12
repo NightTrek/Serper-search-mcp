@@ -47,7 +47,7 @@ pnpm run build
 
 ## ⚙️ Configuration
 
-1. Get your Serper API key from [Serper.dev](https://serper.de
+1. Get your Serper API key from [Serper.dev](https://serper.dev)
 
 2. Create a `.env` file in the root directory:
 ```env
