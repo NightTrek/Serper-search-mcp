@@ -231,3 +231,7 @@ GROUP BY depth
    - Source evaluation enhancement
    - Relevance calculation refinement
    - Citation quality improvement
+
+## Concurrent research
+
+Each research request has its own metrics session and client, so overlapping calls cannot reset one another’s operation IDs. The client is shut down on success or failure. Final telemetry flushing is best effort and limited to one second; a telemetry failure does not replace the research result. With `DISABLE_METRICS=true`, no PostHog client is created.

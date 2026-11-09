@@ -231,7 +231,8 @@ export class MetricsService {
   async cleanup() {
     if (this.enabled && this.client) {
       try {
-        await this.client.shutdownAsync();
+        // Bound best-effort telemetry flushing so it cannot delay a response indefinitely.
+        await this.client.shutdown(1000);
       } catch (err) {
         // Silently handle cleanup errors
       }

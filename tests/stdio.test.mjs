@@ -75,3 +75,24 @@ for (const key of [undefined, '   ', 'dummy-router-secret']) {
     assert.equal(unknown.error.code, -32601);
   });
 }
+
+
+test('concurrent research calls keep independent metrics and survive a peer failure', {timeout: 10000}, async t => {
+  const {request, notify} = launch(t, 'dummy-router-secret');
+  await request('initialize', {protocolVersion: '2024-11-05', capabilities: {}, clientInfo: {name: 'concurrency-test', version: '1.0.0'}});
+  notify('notifications/initialized');
+  const research = query => request('tools/call', {name: 'deep-research', arguments: {query, depth: 'basic'}});
+  const [first, second] = await Promise.all([research('overlap-a'), research('overlap-b')]);
+  assert.equal(first.error, undefined);
+  assert.equal(second.error, undefined);
+  assert.match(first.result.content[0].text, /Mock research answer for overlap-a/);
+  assert.match(second.result.content[0].text, /Mock research answer for overlap-b/);
+  const [failed, healthy] = await Promise.all([research('fail'), research('healthy')]);
+  assert.match(failed.error.message, /Mock research failure/);
+  assert.equal(healthy.error, undefined);
+  assert.match(healthy.result.content[0].text, /Mock research answer for healthy/);
+  const next = await research('next');
+  assert.equal(next.error, undefined);
+  const search = await request('tools/call', {name: 'serper-google-search', arguments: {query: 'still works'}});
+  assert.ok(search.result.content);
+});
