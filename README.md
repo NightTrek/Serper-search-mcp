@@ -29,6 +29,8 @@ A Model Context Protocol server that provides Google search capabilities through
 
 ## 🚀 Installation
 
+Requires Node.js 20.6 or newer. Node.js 24 LTS is recommended and tested in CI.
+
 1. Clone the repository:
 ```bash
 git clone https://github.com/yourusername/serper-search-server.git
