@@ -88,11 +88,28 @@ test('concurrent research calls keep independent metrics and survive a peer fail
   assert.match(first.result.content[0].text, /Mock research answer for overlap-a/);
   assert.match(second.result.content[0].text, /Mock research answer for overlap-b/);
   const [failed, healthy] = await Promise.all([research('fail'), research('healthy')]);
-  assert.match(failed.error.message, /Mock research failure/);
+  assert.match(failed.error.message, /Unexpected error while requesting an OpenRouter completion/);
   assert.equal(healthy.error, undefined);
   assert.match(healthy.result.content[0].text, /Mock research answer for healthy/);
   const next = await research('next');
   assert.equal(next.error, undefined);
   const search = await request('tools/call', {name: 'serper-google-search', arguments: {query: 'still works'}});
   assert.ok(search.result.content);
+});
+
+
+test('malformed and failed OpenRouter responses stay structured and leave search usable', {timeout: 10000}, async t => {
+  const {request, notify} = launch(t, 'dummy-router-secret');
+  await request('initialize', {protocolVersion: '2024-11-05', capabilities: {}, clientInfo: {name: 'error-test', version: '1.0.0'}});
+  notify('notifications/initialized');
+  for (const query of ['empty-choices', 'missing-text', 'provider-error', 'http-error', 'timeout-error']) {
+    const result = await request('tools/call', {name: 'deep-research', arguments: {query, depth: 'basic'}});
+    assert.equal(result.error.code, -32603);
+    assert.match(result.error.message, /OpenRouter/);
+    assert.doesNotMatch(result.error.message, /Cannot read|undefined|sensitive-prompt/);
+    const search = await request('tools/call', {name: 'serper-google-search', arguments: {query: 'still works'}});
+    assert.ok(search.result.content);
+  }
+  const healthy = await request('tools/call', {name: 'deep-research', arguments: {query: 'healthy', depth: 'basic'}});
+  assert.equal(healthy.error, undefined);
 });

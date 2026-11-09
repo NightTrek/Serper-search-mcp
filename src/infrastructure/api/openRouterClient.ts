@@ -1,7 +1,7 @@
 /**
  * OpenRouter API client for LLM operations
  */
-import axios, { AxiosInstance, AxiosError } from 'axios';
+import axios, { AxiosInstance } from 'axios';
 import { config, REQUEST_TIMEOUT } from '../config/environment.js';
 import { ErrorCode, McpError } from '@modelcontextprotocol/sdk/types.js';
 
@@ -77,10 +77,17 @@ export class OpenRouterClient {
         stop: options?.stop
       });
 
-      return response.data.choices[0].text;
+      const data = response.data;
+      if (data && typeof data === 'object' && data.error != null) {
+        throw new McpError(ErrorCode.InternalError, 'OpenRouter returned an error response.');
+      }
+      const text = Array.isArray(data?.choices) ? data.choices[0]?.text : undefined;
+      if (typeof text !== 'string' || !text.trim()) {
+        throw new McpError(ErrorCode.InternalError, 'OpenRouter returned an invalid completion response: expected a non-empty text choice.');
+      }
+      return text;
     } catch (error) {
-      this.handleApiError(error);
-      throw error; // This line won't be reached but TypeScript needs it
+      return this.handleApiError(error);
     }
   }
 
@@ -102,28 +109,29 @@ export class OpenRouterClient {
 
       return response.data;
     } catch (error) {
-      this.handleApiError(error);
-      throw error; // This line won't be reached but TypeScript needs it
+      return this.handleApiError(error);
     }
   }
 
   /**
    * Handles API errors and transforms them into McpErrors
    */
-  private handleApiError(error: any): never {
+  private handleApiError(error: unknown): never {
+    if (error instanceof McpError) throw error;
+
+    // Never propagate provider bodies or transport messages: they may echo
+    // prompts, authorization headers, or other sensitive request details.
     if (axios.isAxiosError(error)) {
-      const axiosError = error as AxiosError;
-      throw new McpError(
-        ErrorCode.InternalError,
-        `OpenRouter API error: ${
-          (axiosError.response?.data as any)?.error?.message ?? axiosError.message
-        }`
-      );
+      const status = error.response?.status;
+      const timedOut = error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT';
+      const message = timedOut
+        ? 'OpenRouter API request timed out.'
+        : typeof status === 'number' && Number.isInteger(status) && status >= 100 && status <= 599
+          ? `OpenRouter API request failed (HTTP ${status}).`
+          : 'OpenRouter API request failed. Check connectivity and configuration.';
+      throw new McpError(ErrorCode.InternalError, message);
     }
 
-    throw new McpError(
-      ErrorCode.InternalError,
-      `Unexpected error: ${(error as Error).message}`
-    );
+    throw new McpError(ErrorCode.InternalError, 'Unexpected error while requesting an OpenRouter completion.');
   }
 }
