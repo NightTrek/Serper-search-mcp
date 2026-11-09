@@ -64,7 +64,6 @@ export class ResearchOrchestrator {
     // Begin event loop
     while (state.status !== 'complete' && iterationCount < maxIterations) {
       iterationCount++;
-      console.log(`Research iteration ${iterationCount}/${maxIterations}`);
       
       try {
         // If no queries pending and no subqueries generated yet, generate initial subqueries
@@ -159,14 +158,6 @@ export class ResearchOrchestrator {
       state.status = 'complete';
     }
     
-    // Record operation completion before synthesis
-    await this.metrics.recordOperationCompletion({
-      totalSearches: state.searchResults.length,
-      totalSubQueries: state.subQueries.length,
-      depth: request.depth || 'standard',
-      success: true
-    });
-
     // Synthesize the final result with appropriate depth
     const synthesisStartTime = Date.now();
     const result = await this.researchService.synthesizeResults(state, this.llmAdapter, request.depth);
@@ -177,6 +168,14 @@ export class ResearchOrchestrator {
       synthesisTime: Date.now() - synthesisStartTime,
       resultLength: result.answer.length,
       citationCount: result.citations.length
+    });
+
+    // Record operation completion after result metrics
+    await this.metrics.recordOperationCompletion({
+      totalSearches: state.searchResults.length,
+      totalSubQueries: state.subQueries.length,
+      depth: request.depth || 'standard',
+      success: true
     });
 
     return result;

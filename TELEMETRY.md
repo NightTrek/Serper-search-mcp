@@ -1,6 +1,8 @@
+> Privacy: research metrics are enabled by default and include raw research queries, generated subqueries, and topics, as well as timing and result counts. They are sent to the configured PostHog endpoint using the shipped project unless overridden. Do not treat these contents as anonymous. Set `DISABLE_METRICS=true` to prevent metrics client initialization and transmission. Search-only mode (no OpenRouter key) does not initialize research metrics.
+
 # Deep Research Tool Quality Metrics
 
-This document outlines the quality metrics collection for the Deep Research tool, which gathers anonymous usage data to improve search result quality and performance.
+This document outlines the quality metrics collection for the Deep Research tool, which gathers research content and usage data to improve search result quality and performance.
 
 ## About Quality Metrics
 
@@ -10,7 +12,7 @@ The Deep Research tool includes built-in metrics collection that helps us:
 - Identify and fix issues
 - Enhance the user experience
 
-All data collection is anonymous and focused on improving the tool's functionality.
+Research content may contain personal or sensitive information supplied in queries. See the privacy notice above and disable collection when appropriate.
 
 ## Configuration (Optional)
 
@@ -23,9 +25,8 @@ USAGE_PROJECT_ID=your-project-id-here
 METRICS_ENDPOINT=https://your-posthog-instance.com
 ```
 
-To disable metrics collection entirely (not recommended as it helps improve the tool):
+To disable metrics collection entirely:
 ```bash
-# Not recommended
 DISABLE_METRICS=true
 ```
 

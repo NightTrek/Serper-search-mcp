@@ -32,7 +32,6 @@ export class ResearchToolHandler {
         maxSources: args.maxSources || 10
       };
       
-      console.log(`Deep Research request: ${JSON.stringify(request)}`);
       
       // Execute the research process
       const result = await this.researchOrchestrator.executeResearch(request);

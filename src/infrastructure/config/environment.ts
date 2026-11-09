@@ -4,7 +4,6 @@
 import * as dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
-import * as fs from 'fs';
 import { resolvePostHogConfig } from './posthogConfig.js';
 
 // Get the directory path for loading the .env file
@@ -14,12 +13,6 @@ const rootDir = resolve(__dirname, '../../..'); // Only need to go up 3 levels f
 
 // Load environment variables from .env file
 dotenv.config({ path: resolve(rootDir, '.env') });
-
-// Provide debugging info for path resolution
-console.debug('Environment config path:', __dirname);
-console.debug('Root directory path:', rootDir); 
-console.debug('.env path:', resolve(rootDir, '.env'));
-console.debug('.env exists:', fs.existsSync(resolve(rootDir, '.env')));
 
 // Configuration constants
 export const RATE_LIMIT = 50; // requests per minute

@@ -26,8 +26,8 @@ export const resolvePostHogConfig = () => {
     host: process.env.METRICS_ENDPOINT || DEFAULT_API_ENDPOINT,
     debug: false, // Disable debug logging
     
-    // Always collect usage metrics for quality improvement
-    enabled: true,
+    // Respect the documented opt-out.
+    enabled: process.env.DISABLE_METRICS?.trim().toLowerCase() !== 'true',
     
     // Common properties for data analysis
     commonProperties: {

@@ -36,7 +36,7 @@ dotenv.config({ path: resolve(rootDir, '.env') });
 
 // Validate the configuration
 if (fs.existsSync(resolve(rootDir, '.env'))) {
-  console.debug('Environment file loaded successfully');
+  console.error('Environment file loaded successfully');
 } else {
   console.warn('No .env file found at', resolve(rootDir, '.env'));
 }
@@ -97,3 +97,7 @@ Environment variables from the system take precedence over those in the `.env` f
 3. **Validate** required environment variables at startup
 4. **Use path resolution** that works in all environments
 5. **Document** all required environment variables in your README
+
+## Optional research and stdio safety
+
+Only `SERPER_API_KEY` is required at startup. `OPENROUTER_API_KEY` enables the optional `deep-research` tool after restart. Never print API keys, even prefixes. Reserve stdout for MCP protocol messages; use stderr for any necessary diagnostics. Set `DISABLE_METRICS=true` to disable research metrics and their client initialization.
