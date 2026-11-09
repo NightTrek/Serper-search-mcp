@@ -21,12 +21,13 @@ import { ResearchToolHandler } from './application/tools/handlers/researchToolHa
 import { searchToolDefinition } from './application/tools/schemas/searchToolSchema.js';
 import { researchToolDefinition } from './application/tools/schemas/researchToolSchema.js';
 import { ResearchOrchestrator } from './application/orchestration/researchOrchestrator.js';
+import { config } from './infrastructure/config/environment.js';
 import { MetricsService } from './infrastructure/quality/metricsService.js';
 
 export class SerperSearchServer {
   private server: Server;
   private searchToolHandler: SearchToolHandler;
-  private researchToolHandler: ResearchToolHandler;
+  private researchToolHandler?: ResearchToolHandler;
 
   constructor() {
     // Initialize server
@@ -44,29 +45,22 @@ export class SerperSearchServer {
 
     // Initialize API clients
     const serperClient = new SerperClient();
-    const openRouterClient = new OpenRouterClient();
-    
-    // Initialize adapters
-    const llmAdapter = new OpenRouterAdapter(openRouterClient);
-    
-    // Initialize services
     const searchService = new SearchService(serperClient);
-    const agentService = new AgentService(); // No constructor parameters needed
-    const researchService = new ResearchService(); // No constructor parameters needed
-    const metricsService = new MetricsService();
-    
-    // Initialize orchestrators
-    const researchOrchestrator = new ResearchOrchestrator(
-      researchService,
-      agentService,
-      searchService,
-      llmAdapter,
-      metricsService
-    );
-    
-    // Initialize tool handlers
     this.searchToolHandler = new SearchToolHandler(searchService);
-    this.researchToolHandler = new ResearchToolHandler(researchOrchestrator);
+
+    // Research is optional: search-only installations never initialize an LLM
+    // client or research telemetry.
+    if (config.openRouterApiKey.trim()) {
+      const llmAdapter = new OpenRouterAdapter(new OpenRouterClient());
+      const researchOrchestrator = new ResearchOrchestrator(
+        new ResearchService(),
+        new AgentService(),
+        searchService,
+        llmAdapter,
+        new MetricsService()
+      );
+      this.researchToolHandler = new ResearchToolHandler(researchOrchestrator);
+    }
 
     // Register tool handlers
     this.setupToolHandlers();
@@ -81,7 +75,9 @@ export class SerperSearchServer {
   private setupToolHandlers() {
     // Register tool definitions
     this.server.setRequestHandler(ListToolsRequestSchema, async () => ({
-      tools: [searchToolDefinition, researchToolDefinition],
+      tools: this.researchToolHandler
+        ? [searchToolDefinition, researchToolDefinition]
+        : [searchToolDefinition],
     }));
 
     // Register tool request handler
@@ -90,6 +86,15 @@ export class SerperSearchServer {
         return this.searchToolHandler.handleSearchRequest(request.params.arguments);
       } 
       else if (request.params.name === researchToolDefinition.name) {
+        if (!this.researchToolHandler) {
+          return {
+            isError: true,
+            content: [{
+              type: 'text',
+              text: 'Deep Research requires OPENROUTER_API_KEY. Set it and restart the server to enable this optional tool. Basic search requires only SERPER_API_KEY.',
+            }],
+          };
+        }
         return this.researchToolHandler.handleResearchRequest(request.params.arguments);
       }
       else {

@@ -47,18 +47,22 @@ pnpm run build
 
 ## ⚙️ Configuration
 
-1. Get your Serper API key from [Serper.dev](https://serper.de
+1. Get your Serper API key from [Serper.dev](https://serper.dev).
 
 2. Create a `.env` file in the root directory:
 ```env
 # Required
 SERPER_API_KEY=your_api_key_here
 
+# Optional: enables the deep-research tool (not needed for Google search)
+# OPENROUTER_API_KEY=your_openrouter_api_key
+# OPENROUTER_MODEL=your_preferred_model
+
 # Optional - Advanced Quality Metrics Configuration (pre-configured by default)
 USAGE_METRICS_KEY=your-custom-metrics-key     # Optional
 USAGE_PROJECT_ID=your-custom-project-id       # Optional
 METRICS_ENDPOINT=https://your-custom-host.com # Optional
-DISABLE_METRICS=false                         # Not recommended
+DISABLE_METRICS=true                          # Disable research metrics
 ```
 
 See [TELEMETRY.md](TELEMETRY.md) for detailed information about:
@@ -108,6 +112,9 @@ The server provides a powerful search tool with the following parameters:
 ```
 
 ### Deep Research Tool
+
+Deep Research is optional. With only `SERPER_API_KEY`, the server starts and advertises only `serper-google-search`. Set a non-empty `OPENROUTER_API_KEY` and restart to enable `deep-research`. Calling it without that key returns a configuration error and leaves search available. Research uses OpenRouter in addition to Serper and may incur charges from both providers.
+
 
 For more comprehensive research needs, the server provides a deep research tool that performs multi-step research with the following parameters:
 
@@ -232,3 +239,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [Serper API](https://serper.dev) for providing the Google search capabilities
 - [Model Context Protocol](https://github.com/modelcontextprotocol/mcp) for the MCP framework
 - [PostHog](https://posthog.com) for analytics capabilities
+
+## Development checks
+
+Run `pnpm test` (Node.js 20.6+). Tests build the server, exercise MCP initialize/list/call over stdio, and mock all HTTP calls with dummy credentials. No paid API access is needed. Stdout is reserved for MCP JSON-RPC; diagnostics belong on stderr and must never contain API keys or key prefixes.

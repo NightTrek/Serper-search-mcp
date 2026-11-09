@@ -18,14 +18,14 @@ export class MetricsService {
     
     try {
       // Initialize quality metrics client
-      this.client = new PostHog(
+      this.client = this.enabled ? new PostHog(
         config.posthog.apiKey,
         { 
           host: config.posthog.host,
           flushAt: 10, 
           flushInterval: 30000,
         }
-      );
+      ) : undefined;
     } catch (e) {
       // Silently handle initialization errors
       this.enabled = false;

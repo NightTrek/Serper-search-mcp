@@ -52,10 +52,6 @@ export class OpenRouterClient {
       throw new Error('OpenRouter API key is required. Please set OPENROUTER_API_KEY in your environment.');
     }
     
-    // Debug config
-    console.debug('OpenRouter API Key:', apiKey ? `${apiKey.substring(0, 5)}...` : 'None');
-    console.debug('OpenRouter Model:', this.model);
-    
     this.axiosInstance = axios.create({
       baseURL: baseUrl,
       headers: {
