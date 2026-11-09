@@ -33,13 +33,13 @@ Requires Node.js 20.6 or newer. Node.js 24 LTS is recommended and tested in CI.
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/serper-search-server.git
-cd serper-search-server
+git clone https://github.com/NightTrek/Serper-search-mcp.git
+cd Serper-search-mcp
 ```
 
 2. Install dependencies:
 ```bash
-pnpm install
+pnpm install --frozen-lockfile
 ```
 
 3. Build the server:
@@ -87,7 +87,7 @@ Add the server config to your Claude Desktop configuration:
 {
   "mcpServers": {
     "serper-search-server": {
-      "command": "/path/to/serper-search-server/build/index.js",
+      "command": "/path/to/Serper-search-mcp/build/index.js",
       "env": {
         "SERPER_API_KEY": "your_api_key_here"
       }
@@ -234,12 +234,12 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📝 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is described as MIT-licensed. A standalone LICENSE file is not currently included in this repository.
 
 ## 🙏 Acknowledgments
 
 - [Serper API](https://serper.dev) for providing the Google search capabilities
-- [Model Context Protocol](https://github.com/modelcontextprotocol/mcp) for the MCP framework
+- [Model Context Protocol](https://modelcontextprotocol.io) for the MCP framework
 - [PostHog](https://posthog.com) for analytics capabilities
 
 ## Development checks
