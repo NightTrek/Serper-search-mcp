@@ -22,7 +22,6 @@ import { searchToolDefinition } from './application/tools/schemas/searchToolSche
 import { researchToolDefinition } from './application/tools/schemas/researchToolSchema.js';
 import { ResearchOrchestrator } from './application/orchestration/researchOrchestrator.js';
 import { config } from './infrastructure/config/environment.js';
-import { MetricsService } from './infrastructure/quality/metricsService.js';
 
 export class SerperSearchServer {
   private server: Server;
@@ -56,8 +55,7 @@ export class SerperSearchServer {
         new ResearchService(),
         new AgentService(),
         searchService,
-        llmAdapter,
-        new MetricsService()
+        llmAdapter
       );
       this.researchToolHandler = new ResearchToolHandler(researchOrchestrator);
     }
