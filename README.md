@@ -132,7 +132,7 @@ The deep research tool:
 - Uses AI to synthesize information from multiple sources
 - Formats results with proper citations and references
 - Adapts its research strategy based on intermediate results
-- Collects anonymous quality metrics to improve search results
+- Collects research content and quality metrics unless disabled (see TELEMETRY.md)
 
 Depth Levels:
 - basic: Quick overview (3-5 sources, ~5 min)
