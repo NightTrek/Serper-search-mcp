@@ -19,6 +19,18 @@ axios.defaults.adapter = async (config) => {
     const { prompt } = JSON.parse(config.data);
     const query = prompt.match(/(?:Research Query|Original Query): (.+)/)?.[1];
     assert.ok(query, 'Mock must recognize the research query');
+    const malformed = {
+      'empty-choices': {choices: []},
+      'missing-text': {choices: [{}]},
+      'provider-error': {error: {message: 'dummy-router-secret sensitive-prompt'}},
+    };
+    if (Object.hasOwn(malformed, query)) {
+      return {data: malformed[query], status: 200, statusText: 'OK', headers: {}, config};
+    }
+    if (query === 'http-error') {
+      throw new axios.AxiosError('dummy-router-secret', 'ERR_BAD_RESPONSE', config, {}, {status: 429, data: {error: {message: 'sensitive-prompt'}}, headers: {}, config});
+    }
+    if (query === 'timeout-error') throw new axios.AxiosError('dummy-router-secret', 'ECONNABORTED');
     let answer;
     if (prompt.includes('Research Query:') && !prompt.includes('Original Research Query:')) {
       if (query === 'fail') throw new Error('Mock research failure');

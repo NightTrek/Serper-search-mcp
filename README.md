@@ -245,3 +245,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Development checks
 
 Run `pnpm test` (Node.js 20.6+). Tests build the server, exercise MCP initialize/list/call over stdio, and mock all HTTP calls with dummy credentials. No paid API access is needed. Stdout is reserved for MCP JSON-RPC; diagnostics belong on stderr and must never contain API keys or key prefixes.
+
+### OpenRouter failures
+
+Deep Research reports malformed or empty completion responses as structured MCP errors, rather than passing missing text into later research steps. HTTP failures include the status (for example, 401 for authentication, 429 for rate limiting, or 500 for a provider failure); timeouts are identified separately. Provider response bodies and transport messages are omitted because they may echo prompts or credentials. Basic Serper search remains available after a research failure. These checks do not guarantee availability or model compatibility at the provider.
